@@ -5,7 +5,7 @@ import { Colors } from "../../constants/colors";
 
 const PlacesList = ({ places }) => {
   const renderPlaceItem = (itemData) => {
-    return <PlaceItem place={itemData.data} />;
+    return <PlaceItem place={itemData.item} />;
   };
 
   if (!places || places.length === 0) {
@@ -19,19 +19,21 @@ const PlacesList = ({ places }) => {
   }
 
   return (
-    <View>
-      <FlatList
-        data={places}
-        keyExtractor={(item) => item.id}
-        renderItem={renderPlaceItem}
-      />
-    </View>
+    <FlatList
+      style={styles.list}
+      data={places}
+      keyExtractor={(item) => item.id}
+      renderItem={renderPlaceItem}
+    />
   );
 };
 
 export default PlacesList;
 
 const styles = StyleSheet.create({
+  list: {
+    margin: 24,
+  },
   fallbackContainer: {
     display: "flex",
     flex: 1,
