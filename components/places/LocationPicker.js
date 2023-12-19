@@ -7,14 +7,14 @@ import {
   getCurrentPositionAsync,
   useForegroundPermissions,
 } from "expo-location";
-import { getMapPreview } from "../../utils/location";
+import { getAddress, getMapPreview } from "../../utils/location";
 import {
   useNavigation,
   useRoute,
   useIsFocused,
 } from "@react-navigation/native";
 
-const LocationPicker = () => {
+const LocationPicker = ({ onPickLocation }) => {
   const [pickedLocation, setPickedLocation] = useState();
   const [locationPermissionInformation, requestPermission] =
     useForegroundPermissions();
@@ -24,10 +24,7 @@ const LocationPicker = () => {
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    console.log("---------XXXXXXXXXXXXXXXXXX-------------");
-    console.log("useEffect runnung");
-    console.log("---------XXXXXXXXXXXXXXXXXX-------------");
-    console.log("                                        ");
+    console.log("route params are: ", route, route.params);
     const mapPickedLocation = route.params && {
       lat: route.params.pickedLat,
       long: route.params.pickedLong,
@@ -38,12 +35,21 @@ const LocationPicker = () => {
     }
   }, [route]);
 
-  // useEffect(() => {
-  //   const mapPickedLocation = route.params && {
-  //     lat: route.params.pickedLat,
-  //     long: route.params.pickedLong,
-  //   };
-  // }, [])
+  useEffect(() => {
+    const handleLocation = async () => {
+      if (pickedLocation) {
+        // since google apis are not working because of billing account, we are using a pre-defined address.
+        // const address = await getAddress(
+        //   pickedLocation.lat,
+        //   pickedLocation.long
+        // );
+        const address = "277 Bedford Avenue, Brooklyn, NY 11211, USA";
+        onPickLocation({ ...pickedLocation, address: address });
+      }
+    };
+
+    handleLocation();
+  }, [pickedLocation, onPickLocation]);
 
   const verifyPermissions = async () => {
     if (
@@ -76,12 +82,13 @@ const LocationPicker = () => {
       long: location.coords.longitude,
     });
   };
+
   const pickOnMapHandler = () => {
     navigation.navigate("Map");
   };
 
   let locationPreview = <Text>No location picked yet!</Text>;
-  if (!pickedLocation) {
+  if (pickedLocation) {
     locationPreview = (
       <Image
         style={styles.image}
@@ -92,10 +99,6 @@ const LocationPicker = () => {
       />
     );
   }
-  console.log("---------BBBBBBBBBBBBBBBBBBBBB-------------");
-  console.log("compoenent re-rendered");
-  console.log("---------BBBBBBBBBBBBBBBBBBBBB-------------");
-  console.log("                                           ");
 
   return (
     <View>
